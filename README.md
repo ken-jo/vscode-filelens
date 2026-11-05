@@ -1,66 +1,13 @@
-# filesize package for Visual Studio Code
+# File Info
 
-This package is intended for use with the [Visual Studio Code](https://code.visualstudio.com) editor and it displays the size of the focused file in the status bar of the editor.
+A fork of [filesize](https://github.com/mkxml/vscode-filesize), showing file information in VS Code.
 
-**Bonus:** If you click on the status bar component it will display more information about the file!
+Open a file and hover over the File Info item in the status bar to see its name, size, type, creation and modification times, and path. Click the item to open a details picker. You can also right-click a file in Explorer and choose **File Info: Show File Information**.
 
-## Installation
+File Info uses the active tab's file URI, so it works with text, notebook, image and custom editors that expose a file URI. Some webview previews do not expose their source file to extensions; for those, use the Explorer context menu or open the source file. File system providers determine which timestamps are available. Creation dates can reflect copying rather than the original creation of the content.
 
-In VS Code, press Ctrl-P or Cmd-P (Mac) and type in `ext install vscode-filesize`. Click install in the left bar. Once the extension is installed you will be prompted to restart Visual Studio Code.
+Settings under `fileinfo` control the status bar position, units, date format, creation date, and optional compression sizes. Compression requires reading the file and is skipped for files larger than 16 MiB.
 
-Or you can just search for `filesize` in the extension search bar inside the editor.
+Install a packaged `.vsix` via **Extensions: Install from VSIX...**. This fork can coexist with the original filesize extension.
 
-## Screenshots
-
-`filesize` with the status bar component active in simple view:
-
-![status bar component](https://cldup.com/_Y52O-UfkK.jpg)
-
-### **NEW!** Expanded view
-
-`filesize` with the status bar component active in expanded view (with gzip enabled):
-
-![status bar component](https://cldup.com/urhtudAVO3.jpg)
-
-### Detailed view
-
-To open the detailed view for the current file in focus you can just click at the size in the status bar or use `Crtl`-`shift`-`'` or `Cmd`-`shift`-`'` if you are on a Mac.
-
-`filesize` with the detailed info panel open:
-
-![detailed info](https://cldup.com/x6qsyVLtee.jpg)
-
-## Settings
-
-This package has the following user-configurable settings:
-
-- `displayInfoOnTheRightSideOfStatusBar`: Show the status bar info on the right side instead of the left. (Default: `false`)
-- `showBrotli`: Show the calculated brotli-compressed size in the detailed info view. (Default: `false`)
-- `showGzip`: Show the calculated gzip-compressed size in the detailed info view. (Default: `true`)
-- `showGzipInStatusBar`: Show the calculated gzip-compressed size directly in the status bar. (Default: `false`)
-- `use24HourFormat`: Use the 24-hour clock format for time display; set to `false` for 12-hour format. (Default: `true`)
-- `useDecimal`: Display file sizes using the [SI unit system](https://en.wikipedia.org/wiki/International_System_of_Units); set to `false` to use [IEC's](https://en.wikipedia.org/wiki/Binary_prefix) format. (Default: `false`)
-
-## Contributing
-
-You are welcome to send any issues or pull requests.
-
-Please run eslint in the code and test it with Visual Studio Code before sending changes.
-
-Any bugs? Please file an [issue](https://github.com/mkxml/vscode-filesize/issues/new).
-
-Did something nice with the code? Please send a [pull request](https://github.com/mkxml/vscode-filesize/pulls).
-
-## Authors
-
-- [Matheus Kautzmann](https://github.com/mkxml)
-
-## License
-
-[MIT](LICENSE)
-
-## File Info fork
-
-File Info shows the active local file's creation date next to its size by default. Set `fileinfo.showCreatedInStatusBar` to `false` to hide it. Click the status bar item for details, including the full creation timestamp. The date comes from the file system's birth time, which may be unavailable or reflect a copy rather than the original creation date.
-
-Install the VSIX with **Extensions: Install from VSIX...**. File Info can be installed alongside the original filesize extension; both may display status bar items.
+Original project by Matheus Kautzmann; distributed under the MIT license.

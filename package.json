@@ -2,7 +2,7 @@
   "name": "fileinfo",
   "displayName": "File Info",
   "description": "Show file size and creation date in the status bar",
-  "version": "3.2.4",
+  "version": "3.3.0",
   "icon": "icon.png",
   "publisher": "ken-jo",
   "repository": {
@@ -18,7 +18,7 @@
   ],
   "license": "MIT",
   "engines": {
-    "vscode": "^1.54.0"
+    "vscode": "^1.64.0"
   },
   "categories": [
     "Other"
@@ -34,7 +34,7 @@
     "commands": [
       {
         "command": "fileinfo.showDetails",
-        "title": "File Info: Toggle Detailed Information"
+        "title": "File Info: Show File Information"
       }
     ],
     "configuration": {
@@ -51,16 +51,6 @@
           "default": true,
           "description": "Defaults to true, using 24-hour format. Set to false to get 12-hour format."
         },
-        "fileinfo.showGzip": {
-          "type": "boolean",
-          "default": true,
-          "description": "Defaults to true, whether to show gzip size in detailed view or not."
-        },
-        "fileinfo.showBrotli": {
-          "type": "boolean",
-          "default": false,
-          "description": "Defaults to false, whether to show brotli size in the detailed view."
-        },
         "fileinfo.showRawInBytes": {
           "type": "boolean",
           "default": false,
@@ -71,6 +61,21 @@
           "default": true,
           "description": "Show the active file's creation date in the status bar when available."
         },
+        "fileinfo.displayInfoOnTheRightSideOfStatusBar": {
+          "type": "boolean",
+          "default": false,
+          "description": "Defaults to false, whether to show the filesize info on the right side of the status bar."
+        },
+        "fileinfo.showGzip": {
+          "type": "boolean",
+          "default": true,
+          "description": "Defaults to true, whether to show gzip size in detailed view or not."
+        },
+        "fileinfo.showBrotli": {
+          "type": "boolean",
+          "default": false,
+          "description": "Defaults to false, whether to show brotli size in the detailed view."
+        },
         "fileinfo.showGzipInStatusBar": {
           "type": "boolean",
           "default": false,
@@ -80,13 +85,17 @@
           "type": "boolean",
           "default": false,
           "description": "Defaults to false, whether to show brotli size in the status bar."
-        },
-        "fileinfo.displayInfoOnTheRightSideOfStatusBar": {
-          "type": "boolean",
-          "default": false,
-          "description": "Defaults to false, whether to show the filesize info on the right side of the status bar."
         }
       }
+    },
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "fileinfo.showDetails",
+          "when": "explorerResourceIsFolder == false",
+          "group": "navigation@20"
+        }
+      ]
     }
   },
   "scripts": {

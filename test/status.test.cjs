@@ -1,41 +1,31 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const Module = require('node:module');
-const path = require('node:path');
 
- test('shows the active file creation date and responds to settings and editor changes', () => {
-  let settings = { showCreatedInStatusBar: true };
-  let callbacks = {};
-  let item;
-  const output = { hide() {}, clear() {}, appendLine() {}, show() {}, dispose() {} };
+test('file info handles custom editor files, hover, selection and stale responses', async () => {
+  const callbacks = {};
+  let item, displayed, resolveSlow;
+  const uri = (name) => ({ scheme: 'file', path: '/' + name, fsPath: '/' + name, toString() { return this.path; } });
+  const tabs = { activeTabGroup: { activeTab: { input: { uri: uri('sheet.xlsx') } } }, onDidChangeTabs(fn) { callbacks.tabs = fn; return {}; }, onDidChangeTabGroups() { return {}; } };
   const vscode = {
-    StatusBarAlignment: { Left: 1, Right: 2 },
-    window: {
-      activeTextEditor: { document: { uri: { scheme: 'file' }, fileName: path.resolve(__filename) } },
-      createStatusBarItem() { return item = { text: '', show() { this.visible = true; }, hide() { this.visible = false; }, dispose() {} }; },
-      createOutputChannel() { return output; },
-      onDidChangeActiveTextEditor(fn) { callbacks.editor = fn; return {}; }
-    },
-    workspace: {
-      getConfiguration() { return { get(key) { return settings[key]; } }; },
-      onDidSaveTextDocument(fn) { callbacks.save = fn; return {}; },
-      onDidChangeConfiguration(fn) { callbacks.config = fn; return {}; }
-    },
+    FileType: { File: 1 }, StatusBarAlignment: { Left: 1, Right: 2 },
+    MarkdownString: class { constructor() { this.value = ''; } appendMarkdown(v) { this.value += v; } appendText(v) { this.value += v; } },
+    window: { tabGroups: tabs, createStatusBarItem() { return item = { show() { this.visible = true; }, hide() { this.visible = false; }, dispose() {} }; }, onDidChangeActiveTextEditor() { return {}; }, showQuickPick(items) { displayed = items; }, showInformationMessage() {} },
+    workspace: { fs: { stat(u) { if (u.path === '/slow.pptx') return new Promise(resolve => { resolveSlow = resolve; }); return Promise.resolve({ type: 1, size: 1024, ctime: 1700000000000, mtime: 1700000000000 }); } }, getConfiguration() { return { get(key) { return key === 'showCreatedInStatusBar'; } }; }, onDidSaveTextDocument() { return {}; }, onDidChangeConfiguration() { return {}; } },
     commands: { registerCommand(name, fn) { callbacks.command = fn; return {}; } }
   };
-  const originalLoad = Module._load;
+  const original = Module._load;
   try {
-    Module._load = function(request, ...args) { return request === 'vscode' ? vscode : originalLoad.call(this, request, ...args); };
-    const extension = require('../extension');
-    extension.activate({ subscriptions: [] });
-    assert.equal(item.visible, true);
-    assert.match(item.text, /Created: /);
-    settings.showCreatedInStatusBar = false;
-    callbacks.config();
-    assert.doesNotMatch(item.text, /Created: /);
-    vscode.window.activeTextEditor = undefined;
-    callbacks.editor();
-    assert.equal(item.visible, false);
+    Module._load = function(request, ...args) { return request === 'vscode' ? vscode : original.call(this, request, ...args); };
+    const extension = require('../extension'); extension.activate({ subscriptions: [] });
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(item.visible, true); assert.match(item.tooltip.value, /sheet.xlsx/); assert.match(item.tooltip.value, /Created/);
+    await callbacks.command(); assert.equal(displayed[0].description, 'sheet.xlsx');
+    await callbacks.command(uri('presentation.pptx')); assert.equal(displayed[0].description, 'presentation.pptx');
+    tabs.activeTabGroup.activeTab.input.uri = uri('slow.pptx'); const slow = callbacks.tabs();
+    tabs.activeTabGroup.activeTab.input.uri = uri('notes.md'); await callbacks.tabs();
+    resolveSlow({ type: 1, size: 10, ctime: 1, mtime: 1 }); await slow;
+    assert.match(item.tooltip.value, /notes.md/); assert.doesNotMatch(item.tooltip.value, /slow.pptx/);
     extension.deactivate();
-  } finally { Module._load = originalLoad; }
+  } finally { Module._load = original; }
 });
