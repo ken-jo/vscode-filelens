@@ -46,7 +46,7 @@ function updateTooltip(info) {
     tooltip.appendText(value);
     tooltip.appendMarkdown('\n\n');
   }
-  tooltip.appendMarkdown('---\n\nClick to view details');
+  tooltip.appendMarkdown('---\n\nClick to open details');
   statusBarItem.tooltip = tooltip;
 }
 
@@ -115,8 +115,8 @@ async function showDetails(uri) {
   if (!info) { vscode.window.showInformationMessage('File Info: No file information available.'); return; }
   info = { ...info };
   await addCompression(info, config.showGzip, config.showBrotli);
-  const items = rows(info).map(([label, value]) => ({ label, description: value, alwaysShow: true }));
-  await vscode.window.showQuickPick(items, { title: 'File Info', placeHolder: info.name, matchOnDescription: true });
+  const detail = rows(info).map(([label, value]) => `${label}: ${value}`).join('\n');
+  await vscode.window.showInformationMessage('File Info', { modal: true, detail });
 }
 
 function activate(context) {

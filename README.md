@@ -2,7 +2,7 @@
 
 A fork of [filesize](https://github.com/mkxml/vscode-filesize), showing file information in VS Code.
 
-Open a file and hover over the File Info item in the status bar to see its name, size, type, creation and modification times, and path. Click the item to open a details picker. You can also right-click a file in Explorer and choose **File Info: Show File Information**.
+Open a file and hover over the File Info item in the status bar to see its name, size, type, creation and modification times, and path. Click the item to open a read-only details dialog. You can also right-click a file in Explorer and choose **File Info: Show File Information**.
 
 File Info uses the active tab's file URI, so it works with text, notebook, image and custom editors that expose a file URI. Some webview previews do not expose their source file to extensions; for those, use the Explorer context menu or open the source file. File system providers determine which timestamps are available. Creation dates can reflect copying rather than the original creation of the content.
 
