@@ -2,7 +2,7 @@
   "name": "fileinfo",
   "displayName": "File Info",
   "description": "Show file size and creation date in the status bar",
-  "version": "3.3.1",
+  "version": "3.3.2",
   "icon": "icon.png",
   "publisher": "ken-jo",
   "repository": {

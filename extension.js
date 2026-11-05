@@ -46,7 +46,6 @@ function updateTooltip(info) {
     tooltip.appendText(value);
     tooltip.appendMarkdown('\n\n');
   }
-  tooltip.appendMarkdown('---\n\nClick to open details');
   statusBarItem.tooltip = tooltip;
 }
 
@@ -105,7 +104,7 @@ function updateConfig() {
   if (statusBarItem) statusBarItem.dispose();
   statusBarItem = vscode.window.createStatusBarItem(config.right ? vscode.StatusBarAlignment.Right : vscode.StatusBarAlignment.Left, 1);
   statusBarItem.name = 'File Info';
-  statusBarItem.command = 'fileinfo.showDetails';
+  statusBarItem.command = 'workbench.action.showHover';
   updateStatusBarItem();
 }
 
@@ -115,8 +114,9 @@ async function showDetails(uri) {
   if (!info) { vscode.window.showInformationMessage('File Info: No file information available.'); return; }
   info = { ...info };
   await addCompression(info, config.showGzip, config.showBrotli);
-  const detail = rows(info).map(([label, value]) => `${label}: ${value}`).join('\n');
-  await vscode.window.showInformationMessage('File Info', { modal: true, detail });
+  const escape = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+  const panel = vscode.window.createWebviewPanel('fileinfo.details', 'File Info', vscode.ViewColumn.Active, { enableScripts: false });
+  panel.webview.html = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'"><style>body{color:var(--vscode-foreground);font-family:var(--vscode-font-family);padding:24px}main{max-width:600px;margin:auto;background:var(--vscode-editorWidget-background);border:1px solid var(--vscode-editorWidget-border);border-radius:8px;padding:20px}h1{font-size:1.2em;margin:0 0 18px}dl{margin:0}div{border-top:1px solid var(--vscode-panel-border);padding:10px 0}dt{font-weight:600;margin-bottom:4px}dd{margin:0;overflow-wrap:anywhere;user-select:text}</style></head><body><main><h1>File Info</h1><dl>${rows(info).map(([label,value]) => `<div><dt>${escape(label)}</dt><dd>${escape(value)}</dd></div>`).join('')}</dl></main></body></html>`;
 }
 
 function activate(context) {
