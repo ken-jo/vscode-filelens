@@ -35,4 +35,4 @@ jobs:
       - name: Publish to VS Code Marketplace
         uses: 'Haixing-Hu/action-vsce@v1'
         with:
-          vsceArgs: 'publish -p ${{ secrets.VSCE_PAT }}'
+          vsceArgs: 'publish'
