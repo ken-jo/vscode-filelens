@@ -136,9 +136,8 @@ async function main() {
     await workbench.screenshot({ path: path.join(output, 'file-details.png'), animations: 'disabled', mask: [pathValue], maskColor: '#344052' });
 
     await workbench.keyboard.press('Control+,');
-    const settingsSearch = workbench.getByRole('textbox', { name: /Search settings/i });
-    await settingsSearch.waitFor({ timeout: 15000 });
-    await settingsSearch.fill('@ext:ken-jo.file-lens');
+    await workbench.locator('.settings-editor').waitFor({ timeout: 15000 });
+    await workbench.keyboard.type('@ext:ken-jo.file-lens');
     await workbench.getByText('9 Settings Found', { exact: true }).waitFor({ timeout: 15000 });
     const settingsText = await workbench.locator('.settings-editor').innerText();
     if (!/File Lens/.test(settingsText)) throw new Error('File Lens settings category missing');
