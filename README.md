@@ -55,28 +55,30 @@ Already have a `.vsix` package? Use **Extensions: Install from VSIX...** from th
 
 ## Make it yours
 
-Search for `fileinfo` in VS Code Settings. The setting keys and command ID keep their original `fileinfo` prefix for compatibility.
+Search for **File Lens** in VS Code Settings, or use `@ext:ken-jo.file-lens` to show only this extension's settings. All setting keys use the `fileLens` prefix.
+
+If you customized settings before 3.3.7, move those values to the corresponding `fileLens.*` keys.
 
 | Setting | Default | What it changes |
 | --- | --- | --- |
-| `fileinfo.showCreatedInStatusBar` | `true` | Show the creation date beside the size, when available. |
-| `fileinfo.displayInfoOnTheRightSideOfStatusBar` | `false` | Move File Lens to the right side of the status bar. |
-| `fileinfo.useDecimal` | `false` | Use decimal units instead of binary units. |
-| `fileinfo.use24HourFormat` | `true` | Use a 24-hour clock instead of a 12-hour clock. |
-| `fileinfo.showRawInBytes` | `false` | Include the byte count in the details view. |
-| `fileinfo.showGzip` | `true` | Include gzip size in the details view. |
-| `fileinfo.showBrotli` | `false` | Include Brotli size in the details view. |
-| `fileinfo.showGzipInStatusBar` | `false` | Include gzip size in the status bar. |
-| `fileinfo.showBrotliInStatusBar` | `false` | Include Brotli size in the status bar. |
+| `fileLens.showCreatedInStatusBar` | `true` | Show the creation date beside the size, when available. |
+| `fileLens.displayInfoOnTheRightSideOfStatusBar` | `false` | Move File Lens to the right side of the status bar. |
+| `fileLens.useDecimal` | `false` | Use decimal units instead of binary units. |
+| `fileLens.use24HourFormat` | `true` | Use a 24-hour clock instead of a 12-hour clock. |
+| `fileLens.showRawInBytes` | `false` | Include the byte count in the details view. |
+| `fileLens.showGzip` | `true` | Include gzip size in the details view. |
+| `fileLens.showBrotli` | `false` | Include Brotli size in the details view. |
+| `fileLens.showGzipInStatusBar` | `false` | Include gzip size in the status bar. |
+| `fileLens.showBrotliInStatusBar` | `false` | Include Brotli size in the status bar. |
 
 For example, show both compressed sizes in the details view and move the status item to the right:
 
 ```json
 {
-  "fileinfo.displayInfoOnTheRightSideOfStatusBar": true,
-  "fileinfo.showRawInBytes": true,
-  "fileinfo.showGzip": true,
-  "fileinfo.showBrotli": true
+  "fileLens.displayInfoOnTheRightSideOfStatusBar": true,
+  "fileLens.showRawInBytes": true,
+  "fileLens.showGzip": true,
+  "fileLens.showBrotli": true
 }
 ```
 

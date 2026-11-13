@@ -1,3 +1,10 @@
+## 3.3.7 - Consistent File Lens settings
+
+- Rename all nine settings to the `fileLens.*` namespace.
+- Rename the details command and view IDs to `fileLens.showDetails` and `fileLens.details`.
+- Update documentation, screenshot fixtures and packaging names to match File Lens.
+- Settings customized before 3.3.7 need to be moved to the corresponding `fileLens.*` keys.
+
 ## 3.3.6 - Documentation and real screenshots
 
 - Add a screenshot-led introduction, installation guide and settings reference.

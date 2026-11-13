@@ -2,7 +2,7 @@
   "name": "file-lens",
   "displayName": "File Lens",
   "description": "File size, type, timestamps and path in the status bar and file details",
-  "version": "3.3.6",
+  "version": "3.3.7",
   "icon": "icon.png",
   "publisher": "ken-jo",
   "repository": {
@@ -33,7 +33,7 @@
   "contributes": {
     "commands": [
       {
-        "command": "fileinfo.showDetails",
+        "command": "fileLens.showDetails",
         "title": "File Lens: Show File Information"
       }
     ],
@@ -41,47 +41,47 @@
       "type": "object",
       "title": "File Lens",
       "properties": {
-        "fileinfo.useDecimal": {
+        "fileLens.useDecimal": {
           "type": "boolean",
           "default": false,
           "description": "Defaults to false, using IEC's representation. Set to true to get SI representation."
         },
-        "fileinfo.use24HourFormat": {
+        "fileLens.use24HourFormat": {
           "type": "boolean",
           "default": true,
           "description": "Defaults to true, using 24-hour format. Set to false to get 12-hour format."
         },
-        "fileinfo.showRawInBytes": {
+        "fileLens.showRawInBytes": {
           "type": "boolean",
           "default": false,
           "description": "Defaults to false, whether to show raw size in bytes in the detailed view."
         },
-        "fileinfo.showCreatedInStatusBar": {
+        "fileLens.showCreatedInStatusBar": {
           "type": "boolean",
           "default": true,
           "description": "Show the active file's creation date in the status bar when available."
         },
-        "fileinfo.displayInfoOnTheRightSideOfStatusBar": {
+        "fileLens.displayInfoOnTheRightSideOfStatusBar": {
           "type": "boolean",
           "default": false,
           "description": "Defaults to false, whether to show the filesize info on the right side of the status bar."
         },
-        "fileinfo.showGzip": {
+        "fileLens.showGzip": {
           "type": "boolean",
           "default": true,
           "description": "Defaults to true, whether to show gzip size in detailed view or not."
         },
-        "fileinfo.showBrotli": {
+        "fileLens.showBrotli": {
           "type": "boolean",
           "default": false,
           "description": "Defaults to false, whether to show brotli size in the detailed view."
         },
-        "fileinfo.showGzipInStatusBar": {
+        "fileLens.showGzipInStatusBar": {
           "type": "boolean",
           "default": false,
           "description": "Defaults to false, whether to show gzip size in the status bar."
         },
-        "fileinfo.showBrotliInStatusBar": {
+        "fileLens.showBrotliInStatusBar": {
           "type": "boolean",
           "default": false,
           "description": "Defaults to false, whether to show brotli size in the status bar."
@@ -91,7 +91,7 @@
     "menus": {
       "explorer/context": [
         {
-          "command": "fileinfo.showDetails",
+          "command": "fileLens.showDetails",
           "when": "explorerResourceIsFolder == false",
           "group": "navigation@20"
         }

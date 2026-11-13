@@ -89,7 +89,7 @@ async function updateStatusBarItem() {
 }
 
 function updateConfig() {
-  const settings = vscode.workspace.getConfiguration('fileinfo');
+  const settings = vscode.workspace.getConfiguration('fileLens');
   config = {
     useDecimal: settings.get('useDecimal'),
     use24HourFormat: settings.get('use24HourFormat'),
@@ -115,13 +115,13 @@ async function showDetails(uri) {
   info = { ...info };
   await addCompression(info, config.showGzip, config.showBrotli);
   const escape = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
-  const panel = vscode.window.createWebviewPanel('fileinfo.details', 'File Lens', vscode.ViewColumn.Active, { enableScripts: false });
+  const panel = vscode.window.createWebviewPanel('fileLens.details', 'File Lens', vscode.ViewColumn.Active, { enableScripts: false });
   panel.webview.html = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'"><style>body{color:var(--vscode-foreground);font-family:var(--vscode-font-family);padding:24px}main{max-width:600px;margin:auto;background:var(--vscode-editorWidget-background);border:1px solid var(--vscode-editorWidget-border);border-radius:8px;padding:20px}h1{font-size:1.2em;margin:0 0 18px}dl{margin:0}div{border-top:1px solid var(--vscode-panel-border);padding:10px 0}dt{font-weight:600;margin-bottom:4px}dd{margin:0;overflow-wrap:anywhere;user-select:text}</style></head><body><main><h1>File Lens</h1><dl>${rows(info).map(([label,value]) => `<div><dt>${escape(label)}</dt><dd>${escape(value)}</dd></div>`).join('')}</dl></main></body></html>`;
 }
 
 function activate(context) {
   context.subscriptions.push(
-    vscode.commands.registerCommand('fileinfo.showDetails', showDetails),
+    vscode.commands.registerCommand('fileLens.showDetails', showDetails),
     vscode.workspace.onDidSaveTextDocument(updateStatusBarItem),
     vscode.workspace.onDidChangeConfiguration(updateConfig),
     vscode.window.onDidChangeActiveTextEditor(updateStatusBarItem),
