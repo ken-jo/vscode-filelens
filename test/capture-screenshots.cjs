@@ -54,10 +54,10 @@ async function main() {
     'editor.minimap.enabled': false,
     'editor.wordWrap': 'on',
     'breadcrumbs.enabled': false,
-    'fileinfo.showCreatedInStatusBar': true,
-    'fileinfo.showGzip': true,
-    'fileinfo.showBrotli': true,
-    'fileinfo.showRawInBytes': true
+    'fileLens.showCreatedInStatusBar': true,
+    'fileLens.showGzip': true,
+    'fileLens.showBrotli': true,
+    'fileLens.showRawInBytes': true
   }, null, 2));
 
   const vscode = await downloadAndUnzipVSCode('1.146.0');
@@ -135,6 +135,16 @@ async function main() {
     if (await pathValue.count() !== 1) throw new Error('Expected exactly one Path value for redaction');
     await workbench.screenshot({ path: path.join(output, 'file-details.png'), animations: 'disabled', mask: [pathValue], maskColor: '#344052' });
 
+    await workbench.keyboard.press('Control+,');
+    const settingsSearch = workbench.getByRole('textbox', { name: /Search settings/i });
+    await settingsSearch.waitFor({ timeout: 15000 });
+    await settingsSearch.fill('@ext:ken-jo.file-lens');
+    await workbench.getByText('9 Settings Found', { exact: true }).waitFor({ timeout: 15000 });
+    const settingsText = await workbench.locator('.settings-editor').innerText();
+    if (!/File Lens/.test(settingsText)) throw new Error('File Lens settings category missing');
+    await fs.writeFile(path.join(output, 'settings-verification.txt'), settingsText);
+    await workbench.screenshot({ path: path.join(output, 'settings.png'), animations: 'disabled' });
+
     const text = await workbench.locator('body').innerText();
     if (/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}|C:\\Users\\|\/home\//i.test(text)) throw new Error('Unexpected email address or user-home path in capture');
     await fs.writeFile(path.join(output, 'capture-info.json'), JSON.stringify({
@@ -145,7 +155,7 @@ async function main() {
       workspace: '/tmp/file-lens-demo',
       privacy: 'Isolated fresh profile; Path values redacted in hover and details screenshots; no signed-in accounts',
       screenshotSize: '1440x900',
-      files: ['statusbar-hover.png', 'explorer-context-menu.png', 'file-details.png']
+      files: ['statusbar-hover.png', 'explorer-context-menu.png', 'file-details.png', 'settings.png']
     }, null, 2));
   } catch (error) {
     await fs.writeFile(path.join(output, 'capture-error.txt'), String(error.stack || error));
