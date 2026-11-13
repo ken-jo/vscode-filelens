@@ -1,3 +1,10 @@
+## 3.3.5 - File Lens
+
+- Rebrand this fork as File Lens (`ken-jo.file-lens`).
+- Rename the source repository to `ken-jo/vscode-filelens`.
+- Preserve existing `fileinfo` settings and command IDs for compatibility.
+- Add CI tests, VSIX packaging and OIDC-based Marketplace publishing.
+
 ## 3.2.1 - Keep vscode minimum version to 1.54.0
 
 - Keep supporting VSCode 1.54.0+

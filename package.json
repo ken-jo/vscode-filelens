@@ -1,13 +1,13 @@
 {
-  "name": "fileinfo",
-  "displayName": "File Info",
-  "description": "Show file size and creation date in the status bar",
-  "version": "3.3.2",
+  "name": "file-lens",
+  "displayName": "File Lens",
+  "description": "File size, type, timestamps and path in the status bar and file details",
+  "version": "3.3.5",
   "icon": "icon.png",
   "publisher": "ken-jo",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ken-jo/vscode-fileinfo"
+    "url": "https://github.com/ken-jo/vscode-filelens"
   },
   "keywords": [
     "file",
@@ -34,12 +34,12 @@
     "commands": [
       {
         "command": "fileinfo.showDetails",
-        "title": "File Info: Show File Information"
+        "title": "File Lens: Show File Information"
       }
     ],
     "configuration": {
       "type": "object",
-      "title": "File Info",
+      "title": "File Lens",
       "properties": {
         "fileinfo.useDecimal": {
           "type": "boolean",
