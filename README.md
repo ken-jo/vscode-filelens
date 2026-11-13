@@ -97,8 +97,7 @@ For example, show both compressed sizes in the details view and move the status 
 ```sh
 npm ci
 npm run vscode:prepublish
-node --test test/status.test.cjs
-npx mocha --ui tdd test/view.test.js
+npm test
 ```
 
 The **Capture real VS Code screenshots** GitHub Actions workflow builds and installs the actual VSIX in an isolated VS Code desktop under Xvfb. It uses synthetic fixtures, a clean profile and opaque path masks; screenshots are uploaded for review before being added to this README.
