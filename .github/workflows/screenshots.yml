@@ -1,0 +1,33 @@
+name: Capture real VS Code screenshots
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      CAPTURE_OUTPUT: /tmp/file-lens-capture
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Build the actual extension package
+        run: npx --yes @vscode/vsce@4.1.1 package --out /tmp/file-lens.vsix
+      - name: Install screenshot automation tools
+        run: npm install --no-save --package-lock=false playwright@1.65.0 @vscode/test-electron@3.1.0
+      - name: Capture isolated real VS Code UI
+        run: xvfb-run --auto-servernum --server-args='-screen 0 1600x1000x24' node test/capture-screenshots.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: file-lens-real-screenshots
+          path: /tmp/file-lens-capture/
+          if-no-files-found: error
