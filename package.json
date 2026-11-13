@@ -7,7 +7,7 @@
   "publisher": "ken-jo",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ken-jo/vscode-filesize"
+    "url": "https://github.com/ken-jo/vscode-fileinfo"
   },
   "keywords": [
     "file",
