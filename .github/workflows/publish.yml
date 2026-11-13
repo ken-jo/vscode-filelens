@@ -1,41 +1,54 @@
 name: Publish to VS Code Marketplace
 
 on:
+  push:
+    branches: [master]
+  pull_request:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish the verified package to Marketplace
+        type: boolean
+        default: false
 
 permissions:
   contents: read
-  id-token: write
+
+concurrency:
+  group: marketplace-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run vscode:prepublish
-
-      - name: Get OIDC token for VS Code Marketplace
-        id: oidc
-        uses: actions/id-token-request@v1
-        with:
-          audience: 'api://vscode-marketplace.visualstudio.com'
-
-      - name: Package and Publish to VS Code Marketplace
-        env:
-          VSCE_PAT: ${{ steps.oidc.outputs.token }}
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Run regression tests
         run: |
-          npx vsce package
-          npx vsce publish
+          node --test test/status.test.cjs
+          npx mocha --ui tdd test/view.test.js
+      - name: Validate release version
+        if: github.event_name == 'release'
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: test "$RELEASE_TAG" = "v$(jq -r .version package.json)"
+      - name: Package extension
+        run: npx --yes @vscode/vsce@4.1.1 package --out fileinfo.vsix
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fileinfo-vsix
+          path: fileinfo.vsix
+      - name: Publish using Trusted Publishing
+        if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.publish && github.ref == 'refs/heads/master')
+        run: npx --yes @vscode/vsce@4.1.1 publish --oidc --packagePath fileinfo.vsix
