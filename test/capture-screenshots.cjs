@@ -136,7 +136,7 @@ async function main() {
     await workbench.screenshot({ path: path.join(output, 'file-details.png'), animations: 'disabled', mask: [pathValue], maskColor: '#344052' });
 
     const text = await workbench.locator('body').innerText();
-    if (/ikcha|jo\.dreame|lge\.com|LG Electronics|C:\\Users\\|\/home\//i.test(text)) throw new Error('Unexpected identifying text in capture');
+    if (/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}|C:\\Users\\|\/home\//i.test(text)) throw new Error('Unexpected email address or user-home path in capture');
     await fs.writeFile(path.join(output, 'capture-info.json'), JSON.stringify({
       source: 'Real VS Code desktop, installed from the built VSIX',
       vscodeVersion: '1.146.0',
