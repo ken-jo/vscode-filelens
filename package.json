@@ -2,7 +2,7 @@
   "name": "file-lens",
   "displayName": "File Lens",
   "description": "File size, type, timestamps and path in the status bar and file details",
-  "version": "3.3.7",
+  "version": "3.3.8",
   "icon": "icon.png",
   "publisher": "ken-jo",
   "repository": {

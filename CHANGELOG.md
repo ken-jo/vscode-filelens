@@ -1,3 +1,10 @@
+## 3.3.8 - Remove obsolete code and tooling
+
+- Remove the unused output-channel table renderer and its tests.
+- Retire the legacy Mocha/VS Code test launcher; use the maintained Node regression tests and real-UI capture workflow.
+- Remove five unused development dependencies and 92 obsolete lock entries.
+- Update development instructions, debugging configuration and packaging exclusions.
+
 ## 3.3.7 - Consistent File Lens settings
 
 - Rename all nine settings to the `fileLens.*` namespace.
