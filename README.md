@@ -1,13 +1,108 @@
 # File Lens
 
-A fork of [filesize](https://github.com/mkxml/vscode-filesize), showing file information in VS Code.
+**File facts, one hover away.**
 
-Open a file and hover over the File Lens item in the status bar to see its name, size, type, creation and modification times, and path. Click the item or hover over it to show its information popup. You can also right-click a file in Explorer and choose **File Lens: Show File Lensrmation** to open a read-only details view.
+Check a file's size, type, creation time, modification time and path without leaving VS Code. Hover the status bar for a quick look, or open a dedicated read-only details view from Explorer.
 
-File Lens uses the active tab's file URI, so it works with text, notebook, image and custom editors that expose a file URI. Some webview previews do not expose their source file to extensions; for those, use the Explorer context menu or open the source file. File system providers determine which timestamps are available. Creation dates can reflect copying rather than the original creation of the content.
+[Install from the Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ken-jo.file-lens) · Extension ID: `ken-jo.file-lens`
 
-Settings under `fileinfo` control the status bar position, units, date format, creation date, and optional compression sizes. Compression requires reading the file and is skipped for files larger than 16 MiB.
+## See it in action
 
-Install **File Lens** (`ken-jo.file-lens`) from the VS Code Marketplace, or install a packaged `.vsix` via **Extensions: Install from VSIX...**. This fork can coexist with the original filesize extension.
+### Hover for the essentials
 
-Original project by Matheus Kautzmann; distributed under the MIT license.
+Open a file and hover over its size in the status bar. File Lens brings the file name, readable size, type, timestamps and path together in one tooltip. The creation date can also appear beside the size.
+
+![Real VS Code screenshot: File Lens status-bar hover with file size, type and timestamps. The path is masked.](docs/screenshots/statusbar-hover.png)
+
+### Open the full details
+
+Run **File Lens: Show File Information** from the Command Palette, or choose it from a file's Explorer context menu. The read-only view gives you more room to inspect the metadata and select text to copy. Optional raw-byte, gzip and Brotli sizes are shown when enabled and available.
+
+![Real VS Code screenshot: the File Lens read-only details view, including raw-byte and compression sizes. The path is masked.](docs/screenshots/file-details.png)
+
+### Inspect a file from Explorer
+
+Right-click a file and select **File Lens: Show File Information**. This is also the fallback when a preview does not expose its source file to extensions.
+
+![Real VS Code screenshot: the File Lens command in a file's Explorer context menu.](docs/screenshots/explorer-context-menu.png)
+
+*These are cropped real VS Code desktop captures, not interface mockups. They use synthetic demo files and a fresh, unsigned-in profile. Path values are intentionally masked.*
+
+## Get started
+
+Requires **VS Code 1.64 or newer**.
+
+1. Install **File Lens** by **Ken Jo** from VS Code's Extensions view.
+2. Open a saved file. Its size appears in the status bar, on the left by default.
+3. Hover over the size for quick information. For a larger view, right-click a file in Explorer and choose **File Lens: Show File Information**.
+
+You can also open Quick Open (`Ctrl+P` on Windows/Linux, `Cmd+P` on macOS) and run:
+
+```text
+ext install ken-jo.file-lens
+```
+
+Already have a `.vsix` package? Use **Extensions: Install from VSIX...** from the Command Palette.
+
+## What you can see
+
+- **Readable file size**, with binary or decimal units.
+- **File name, type and path**, where available.
+- **Created and modified times**, supplied by the file-system provider.
+- **Raw size in bytes** in the details view when enabled.
+- **Gzip and Brotli sizes**, calculated in the extension host when enabled.
+- **Text, notebook, image and custom-editor files** whose tabs expose a file URI.
+
+## Make it yours
+
+Search for `fileinfo` in VS Code Settings. The setting keys and command ID keep their original `fileinfo` prefix for compatibility.
+
+| Setting | Default | What it changes |
+| --- | --- | --- |
+| `fileinfo.showCreatedInStatusBar` | `true` | Show the creation date beside the size, when available. |
+| `fileinfo.displayInfoOnTheRightSideOfStatusBar` | `false` | Move File Lens to the right side of the status bar. |
+| `fileinfo.useDecimal` | `false` | Use decimal units instead of binary units. |
+| `fileinfo.use24HourFormat` | `true` | Use a 24-hour clock instead of a 12-hour clock. |
+| `fileinfo.showRawInBytes` | `false` | Include the byte count in the details view. |
+| `fileinfo.showGzip` | `true` | Include gzip size in the details view. |
+| `fileinfo.showBrotli` | `false` | Include Brotli size in the details view. |
+| `fileinfo.showGzipInStatusBar` | `false` | Include gzip size in the status bar. |
+| `fileinfo.showBrotliInStatusBar` | `false` | Include Brotli size in the status bar. |
+
+For example, show both compressed sizes in the details view and move the status item to the right:
+
+```json
+{
+  "fileinfo.displayInfoOnTheRightSideOfStatusBar": true,
+  "fileinfo.showRawInBytes": true,
+  "fileinfo.showGzip": true,
+  "fileinfo.showBrotli": true
+}
+```
+
+## Privacy and practical limits
+
+- **No account is required.** Metadata is read through VS Code's file-system API. Optional compression reads the file in the extension host; file contents are not sent to an external service.
+- **Paths may contain personal information.** Mask them before sharing your own screenshots. The documentation images above already have path values masked.
+- Unsaved files do not have on-disk metadata to display.
+- Creation dates depend on the file system and can reflect a copy rather than the original creation of the content. Unavailable timestamps are shown as **Unavailable** in details.
+- Some webview previews do not expose a source file URI. Use the Explorer context menu or open the source file instead.
+- Compression is skipped for files larger than **16 MiB** and can be unavailable if the file cannot be read. Compression sizes describe gzip/Brotli output, not an archive saved to disk.
+- Timestamp formatting follows the environment's locale and the 12/24-hour setting; this is not a custom date-format editor.
+
+## Development and screenshots
+
+```sh
+npm ci
+npm run vscode:prepublish
+node --test test/status.test.cjs
+npx mocha --ui tdd test/view.test.js
+```
+
+The **Capture real VS Code screenshots** GitHub Actions workflow builds and installs the actual VSIX in an isolated VS Code desktop under Xvfb. It uses synthetic fixtures, a clean profile and opaque path masks; screenshots are uploaded for review before being added to this README.
+
+## Credits and license
+
+File Lens is an independently maintained fork of [filesize](https://github.com/mkxml/vscode-filesize), originally by Matheus Kautzmann. It can coexist with the original extension.
+
+Distributed under the [MIT license](LICENSE). No affiliation with other similarly named File Lens or FileLens products is implied.

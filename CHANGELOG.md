@@ -1,3 +1,10 @@
+## 3.3.6 - Documentation and real screenshots
+
+- Add a screenshot-led introduction, installation guide and settings reference.
+- Show real VS Code hover, file details and Explorer menu captures with paths masked.
+- Add a reproducible, isolated screenshot workflow using synthetic demo files.
+- No runtime behavior changes.
+
 ## 3.3.5 - File Lens
 
 - Rebrand this fork as File Lens (`ken-jo.file-lens`).
