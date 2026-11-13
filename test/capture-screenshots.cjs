@@ -33,6 +33,8 @@ async function main() {
   await fs.writeFile(path.join(profile, 'User', 'settings.json'), JSON.stringify({
     'workbench.startupEditor': 'none',
     'workbench.tips.enabled': false,
+    'chat.disableAIFeatures': true,
+    'workbench.secondarySideBar.defaultVisibility': 'hidden',
     'workbench.colorTheme': 'Default Dark Modern',
     'workbench.editor.enablePreview': false,
     'workbench.layoutControl.enabled': false,
@@ -58,11 +60,11 @@ async function main() {
     'fileinfo.showRawInBytes': true
   }, null, 2));
 
-  const vscode = await downloadAndUnzipVSCode('stable');
+  const vscode = await downloadAndUnzipVSCode('1.146.0');
   await runVSCodeCommand([
     '--install-extension', '/tmp/file-lens.vsix', '--force',
     '--user-data-dir', profile, '--extensions-dir', extensions, '--no-sandbox'
-  ], { version: 'stable' });
+  ], { version: '1.146.0' });
   const launchEnv = { ...process.env, TZ: 'UTC' };
   delete launchEnv.ELECTRON_RUN_AS_NODE;
   delete launchEnv.NODE_OPTIONS;
@@ -101,7 +103,7 @@ async function main() {
     await status.hover();
     const hover = workbench.locator('.monaco-hover').filter({ hasText: 'File Lens' }).first();
     await hover.waitFor({ timeout: 15000 });
-    await hover.getByText(fileName, { exact: false }).waitFor({ timeout: 10000 });
+    await hover.getByText(fileName, { exact: false }).first().waitFor({ timeout: 10000 });
     const hoverPaths = hover.getByText(/\/tmp\/file-lens-demo\//);
     if (await hoverPaths.count() !== 1) throw new Error('Expected exactly one hover path for redaction');
     await workbench.screenshot({ path: path.join(output, 'statusbar-hover.png'), animations: 'disabled', mask: [hoverPaths], maskColor: '#344052' });
@@ -137,6 +139,7 @@ async function main() {
     if (/ikcha|jo\.dreame|lge\.com|LG Electronics|C:\\Users\\|\/home\//i.test(text)) throw new Error('Unexpected identifying text in capture');
     await fs.writeFile(path.join(output, 'capture-info.json'), JSON.stringify({
       source: 'Real VS Code desktop, installed from the built VSIX',
+      vscodeVersion: '1.146.0',
       extension: 'ken-jo.file-lens',
       fixture: 'Synthetic Orbit demo files only',
       workspace: '/tmp/file-lens-demo',
