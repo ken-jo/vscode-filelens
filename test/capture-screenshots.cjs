@@ -138,7 +138,9 @@ async function main() {
     await workbench.keyboard.press('Control+,');
     await workbench.locator('.settings-editor').waitFor({ timeout: 15000 });
     await workbench.keyboard.type('@ext:ken-jo.file-lens');
-    await workbench.getByText('9 Settings Found', { exact: true }).waitFor({ timeout: 15000 });
+    const settingsCount = workbench.locator('.settings-count-widget').filter({ hasText: /^9 Settings Found$/ });
+    await settingsCount.waitFor({ timeout: 15000 });
+    await settingsCount.click();
     const settingsText = await workbench.locator('.settings-editor').innerText();
     if (!/File Lens/.test(settingsText)) throw new Error('File Lens settings category missing');
     await fs.writeFile(path.join(output, 'settings-verification.txt'), settingsText);
