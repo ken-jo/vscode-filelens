@@ -27,7 +27,15 @@ jobs:
       - name: Build
         run: npm run vscode:prepublish
 
+      - name: Get OIDC token for VS Code Marketplace
+        id: oidc
+        uses: actions/id-token-request@v1
+        with:
+          audience: 'api://vscode-marketplace.visualstudio.com'
+
       - name: Package and Publish to VS Code Marketplace
+        env:
+          VSCE_PAT: ${{ steps.oidc.outputs.token }}
         run: |
           npx vsce package
           npx vsce publish
