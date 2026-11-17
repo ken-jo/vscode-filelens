@@ -2,7 +2,7 @@
   "name": "file-lens",
   "displayName": "File Lens",
   "description": "File size, type, timestamps and path in the status bar and file details",
-  "version": "3.3.8",
+  "version": "3.3.9",
   "icon": "icon.png",
   "publisher": "ken-jo",
   "repository": {
@@ -35,6 +35,18 @@
       {
         "command": "fileLens.showDetails",
         "title": "File Lens: Show File Information"
+      },
+      {
+        "command": "fileLens.copyFileName",
+        "title": "File Lens: Copy File Name"
+      },
+      {
+        "command": "fileLens.copyFilePath",
+        "title": "File Lens: Copy File Path"
+      },
+      {
+        "command": "fileLens.copyFullInfo",
+        "title": "File Lens: Copy Full Info"
       }
     ],
     "configuration": {
@@ -94,6 +106,21 @@
           "command": "fileLens.showDetails",
           "when": "explorerResourceIsFolder == false",
           "group": "navigation@20"
+        },
+        {
+          "command": "fileLens.copyFileName",
+          "when": "explorerResourceIsFolder == false",
+          "group": "navigation@21"
+        },
+        {
+          "command": "fileLens.copyFilePath",
+          "when": "explorerResourceIsFolder == false",
+          "group": "navigation@22"
+        },
+        {
+          "command": "fileLens.copyFullInfo",
+          "when": "explorerResourceIsFolder == false",
+          "group": "navigation@23"
         }
       ]
     }
@@ -107,10 +134,13 @@
   "devDependencies": {
     "@babel/core": "^7.26.0",
     "@babel/preset-env": "^7.26.0",
+    "@types/mocha": "^10.0.9",
     "@types/node": "^22.8.6",
     "@types/vscode": "^1.54.0",
     "babel-loader": "^9.2.1",
     "eslint": "^8.2.0",
+    "glob": "^11.0.0",
+    "typescript": "^5.6.3",
     "webpack": "^5.96.1",
     "webpack-cli": "^5.1.4"
   },

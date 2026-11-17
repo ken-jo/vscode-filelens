@@ -29,6 +29,10 @@ function rows(info) {
   return result;
 }
 
+function getFullInfoText(info) {
+  return rows(info).map(([label, value]) => `${label}: ${value}`).join('\n');
+}
+
 async function addCompression(info, useGzip, useBrotli) {
   if ((!useGzip && !useBrotli) || info.size > MAX_COMPRESSION_BYTES) return;
   try {
@@ -52,7 +56,6 @@ function updateTooltip(info) {
 function activeUri() {
   const tabs = vscode.window.tabGroups;
   const input = tabs && tabs.activeTabGroup.activeTab && tabs.activeTabGroup.activeTab.input;
-  // Text, custom, notebook, and diff inputs expose their source URI.
   if (input) return input.uri || input.modified;
   const editor = vscode.window.activeTextEditor;
   return editor && editor.document.uri;
@@ -64,7 +67,7 @@ async function loadInfo(uri) {
   if (!(stat.type & vscode.FileType.File)) return undefined;
   const name = path.posix.basename(uri.path);
   const info = calculator.addPrettySize({ uri, name, size: stat.size, ctime: stat.ctime, mtime: stat.mtime, absolutePath: uri.path }, config);
-  try { calculator.addMimeTypeInfo(info); } catch (_) { /* MIME type is optional. */ }
+  try { calculator.addMimeTypeInfo(info); } catch (_) { }
   return info;
 }
 
@@ -114,14 +117,42 @@ async function showDetails(uri) {
   if (!info) { vscode.window.showInformationMessage('File Lens: No file information available.'); return; }
   info = { ...info };
   await addCompression(info, config.showGzip, config.showBrotli);
-  const escape = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+  const escape = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&', '<': '<', '>': '>', '"': '"', "'": ''' })[character]);
   const panel = vscode.window.createWebviewPanel('fileLens.details', 'File Lens', vscode.ViewColumn.Active, { enableScripts: false });
   panel.webview.html = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'"><style>body{color:var(--vscode-foreground);font-family:var(--vscode-font-family);padding:24px}main{max-width:600px;margin:auto;background:var(--vscode-editorWidget-background);border:1px solid var(--vscode-editorWidget-border);border-radius:8px;padding:20px}h1{font-size:1.2em;margin:0 0 18px}dl{margin:0}div{border-top:1px solid var(--vscode-panel-border);padding:10px 0}dt{font-weight:600;margin-bottom:4px}dd{margin:0;overflow-wrap:anywhere;user-select:text}</style></head><body><main><h1>File Lens</h1><dl>${rows(info).map(([label,value]) => `<div><dt>${escape(label)}</dt><dd>${escape(value)}</dd></div>`).join('')}</dl></main></body></html>`;
+}
+
+async function copyFileName(uri) {
+  const info = uri ? await loadInfo(uri) : currentInfo;
+  if (!info) { vscode.window.showInformationMessage('File Lens: No file information available.'); return; }
+  await vscode.env.clipboard.writeText(info.name);
+  vscode.window.showInformationMessage('File Lens: File name copied to clipboard.');
+}
+
+async function copyFilePath(uri) {
+  const info = uri ? await loadInfo(uri) : currentInfo;
+  if (!info) { vscode.window.showInformationMessage('File Lens: No file information available.'); return; }
+  const filePath = info.uri.fsPath || info.uri.toString();
+  await vscode.env.clipboard.writeText(filePath);
+  vscode.window.showInformationMessage('File Lens: File path copied to clipboard.');
+}
+
+async function copyFullInfo(uri) {
+  const info = uri ? await loadInfo(uri) : currentInfo;
+  if (!info) { vscode.window.showInformationMessage('File Lens: No file information available.'); return; }
+  info = { ...info };
+  await addCompression(info, config.showGzip, config.showBrotli);
+  const fullInfo = getFullInfoText(info);
+  await vscode.env.clipboard.writeText(fullInfo);
+  vscode.window.showInformationMessage('File Lens: Full file information copied to clipboard.');
 }
 
 function activate(context) {
   context.subscriptions.push(
     vscode.commands.registerCommand('fileLens.showDetails', showDetails),
+    vscode.commands.registerCommand('fileLens.copyFileName', copyFileName),
+    vscode.commands.registerCommand('fileLens.copyFilePath', copyFilePath),
+    vscode.commands.registerCommand('fileLens.copyFullInfo', copyFullInfo),
     vscode.workspace.onDidSaveTextDocument(updateStatusBarItem),
     vscode.workspace.onDidChangeConfiguration(updateConfig),
     vscode.window.onDidChangeActiveTextEditor(updateStatusBarItem),
