@@ -117,35 +117,38 @@ async function showDetails(uri) {
   if (!info) { vscode.window.showInformationMessage('File Lens: No file information available.'); return; }
   info = { ...info };
   await addCompression(info, config.showGzip, config.showBrotli);
-  const escape = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&', '<': '<', '>': '>', '"': '"', "'": ''' })[character]);
+  const escape = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
   const panel = vscode.window.createWebviewPanel('fileLens.details', 'File Lens', vscode.ViewColumn.Active, { enableScripts: false });
   panel.webview.html = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'"><style>body{color:var(--vscode-foreground);font-family:var(--vscode-font-family);padding:24px}main{max-width:600px;margin:auto;background:var(--vscode-editorWidget-background);border:1px solid var(--vscode-editorWidget-border);border-radius:8px;padding:20px}h1{font-size:1.2em;margin:0 0 18px}dl{margin:0}div{border-top:1px solid var(--vscode-panel-border);padding:10px 0}dt{font-weight:600;margin-bottom:4px}dd{margin:0;overflow-wrap:anywhere;user-select:text}</style></head><body><main><h1>File Lens</h1><dl>${rows(info).map(([label,value]) => `<div><dt>${escape(label)}</dt><dd>${escape(value)}</dd></div>`).join('')}</dl></main></body></html>`;
 }
 
-async function copyFileName(uri) {
-  const info = uri ? await loadInfo(uri) : currentInfo;
+async function copyInfo(uri, kind) {
+  let info;
+  try { info = await loadInfo(uri || activeUri()); } catch (_) { info = undefined; }
   if (!info) { vscode.window.showInformationMessage('File Lens: No file information available.'); return; }
-  await vscode.env.clipboard.writeText(info.name);
-  vscode.window.showInformationMessage('File Lens: File name copied to clipboard.');
+  let text, label;
+  if (kind === 'name') {
+    text = info.name;
+    label = 'File name';
+  } else if (kind === 'path') {
+    text = info.uri.fsPath || info.uri.toString();
+    label = 'File path';
+  } else {
+    await addCompression(info, config.showGzip, config.showBrotli);
+    text = getFullInfoText(info);
+    label = 'Full file information';
+  }
+  try {
+    await vscode.env.clipboard.writeText(text);
+    vscode.window.showInformationMessage(`File Lens: ${label} copied to clipboard.`);
+  } catch (_) {
+    vscode.window.showInformationMessage('File Lens: Could not write to the clipboard.');
+  }
 }
 
-async function copyFilePath(uri) {
-  const info = uri ? await loadInfo(uri) : currentInfo;
-  if (!info) { vscode.window.showInformationMessage('File Lens: No file information available.'); return; }
-  const filePath = info.uri.fsPath || info.uri.toString();
-  await vscode.env.clipboard.writeText(filePath);
-  vscode.window.showInformationMessage('File Lens: File path copied to clipboard.');
-}
-
-async function copyFullInfo(uri) {
-  const info = uri ? await loadInfo(uri) : currentInfo;
-  if (!info) { vscode.window.showInformationMessage('File Lens: No file information available.'); return; }
-  info = { ...info };
-  await addCompression(info, config.showGzip, config.showBrotli);
-  const fullInfo = getFullInfoText(info);
-  await vscode.env.clipboard.writeText(fullInfo);
-  vscode.window.showInformationMessage('File Lens: Full file information copied to clipboard.');
-}
+function copyFileName(uri) { return copyInfo(uri, 'name'); }
+function copyFilePath(uri) { return copyInfo(uri, 'path'); }
+function copyFullInfo(uri) { return copyInfo(uri, 'full'); }
 
 function activate(context) {
   context.subscriptions.push(
