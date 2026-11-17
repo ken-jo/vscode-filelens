@@ -33,11 +33,9 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-      - run: npm install
+      - run: npm ci
       - name: Run regression tests
-        run: |
-          node --test test/status.test.cjs
-          npx mocha --ui tdd test/view.test.js
+        run: npm test
       - name: Validate release version
         if: github.event_name == 'release'
         env:
